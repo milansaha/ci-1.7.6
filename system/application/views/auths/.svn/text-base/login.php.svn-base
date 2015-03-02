@@ -1,0 +1,109 @@
+<?php 
+	$branch_options = array();
+	foreach($branches as $branch)
+	{					
+		$branch_options[$branch->id]=$branch->name;
+	}	
+	echo form_open('auths/login');
+?>
+<div id="login_body">
+	<div id="login_header">
+		<div id="login_header_top">
+			<div id="login_header_top_body">
+				<div id="login_company_logo">
+					<a href="<?php echo base_url();?>"><img src="<?php echo base_url();?>/media/images/microfin_logo_1.png" width="42" border="0" /></a>
+				</div>
+				<div id="login_company_name">Microfin360</div>
+			</div>
+		</div>
+		<div id="login_body_top">
+			<h1 id="login_company_title">User Login for CCDA</h1>
+		</div>
+	</div>
+	<div id="login_container" align="center" style="">
+		<table class="lgoin_table" border="0" width="475px" align="center">
+			<tr>
+				<td width="140px" valign="top"> 
+					<div id="login_login_image" style="">
+						<img src="<?php echo base_url();?>/media/images/dashboard_images/login.jpg" border="0" />
+						<!--<div id="develop_company"><p><a href="http://www.datasoft-bd.com" target="_blank"><img src="<?php echo base_url();?>media/images/Login.png" border="0" width="225" /></a></p></div>-->
+					</div>
+				</td>
+				<style>
+				.login_input_sel, .login_input_text{width:187px;}
+				table div.error {
+						-moz-border-radius: 0 0 5px 5px;
+						background: url("../images/error.png") no-repeat scroll 9px 4px #FFA89B;
+						border: 1px solid #911200;
+						color: #BE2E17;
+						font-family: verdana;
+						font-size: 10px;
+						margin: 0 0 3px 0;
+						padding: 3px 5px 4px 26px;
+						text-align: left;
+						width: 160px;
+					}
+					#login_button{float:right;text-align:right;width:100%;}
+					.login_button {
+						cursor:pointer;
+						background: none repeat scroll 0 0 #f1f1f1;
+						border: 1px solid #cfcfcf;
+						font-family: 'Trebuchet MS',verdana,arial,tahoma,times New Roman;
+						padding: 5px 10px;
+						text-align: left;
+						color:#4F4F4F;
+						cursor:pointer;
+						width: 57px;
+						float: right;
+						margin: 0 0px 0 0;
+						/* border-color: #96D1F8; 
+						-moz-use-text-color #2F5975; */
+					}
+					.login_button .login_button input[type="submit"] a:hover{background:red;}
+				</style>
+				<td width="" align="right"> 
+					<div id="login_body_container" style="">
+						<table border="0" width="250px">
+							<tr>
+								<td align="right"><label for="user_name">User Name:<em>&nbsp;</em></label></td>
+								<td align="left"><?php 	$attribute = array('name'=>'txt_login','id'=>'txt_login','class'=>'login_input_text');
+											echo form_input($attribute,set_value('txt_login'));?>
+								<?php echo form_error('txt_login'); ?></td>
+							</tr>							
+							<tr>
+								<td align="right"><label for="password">Password:<em>&nbsp;</em></label></td>
+								<td align="left"><?php $attribute = array('name'=>'txt_password','id'=>'txt_password','class'=>'login_input_text');
+								echo form_password($attribute,set_value('txt_password'));?>
+								<?php echo form_error('txt_password'); ?></td>
+							</tr>
+							<!--<tr>
+								<td><label for="cbo_branch_id">Branch:<em>&nbsp;</em></label></td>
+								<td><?php 	$arr = array('name'=>'cbo_branch_id','id'=>'cbo_branch_id','style'=>'width:160px;');
+										echo form_dropdown('cbo_branch_id',$branch_options,true); ?></td>
+							</tr>-->
+							<tr>
+								<td>&nbsp;</td>
+								<td align="left">
+								<?php 	$data = array(
+												'name'        => 'remember_me',
+												'id'          => 'remember_me',
+												'value'       => '1',
+												'checked'     => FALSE,
+												'style'       => 'width:2em;display:block;float:left;border:none;',
+												);
+									echo form_checkbox($data); ?>
+									<label for="cbo_branch_id" style="width:100%;margin: 0;padding: 0;text-align: left;width: 75%;">Remember Me</label>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2"><div id="login_button"><?php $arrt = array('name'=>'submit','id'=>'submit','value'=>'Login','class'=>'login_button'); echo form_submit($arrt);?></div></td>
+							</tr>					
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<!--<h1 class="logintitle">User Login for CCDA</h1>-->
+	</div>
+</div>
+<?php echo form_close(); ?>

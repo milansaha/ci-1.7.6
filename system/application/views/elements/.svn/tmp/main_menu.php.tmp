@@ -1,0 +1,151 @@
+<?php
+/** 
+ * Sectoral Highlight
+ * Copyright 2008-2009, DataSoft Systems Bangladesh Limited (http://www.datasoft-bd.com)
+ *
+ * Redistributions of files is not allowed without written permission from DataSoft.
+ *
+ * @filesource    \app\views\reports\sector_highlight.php
+ * @copyright     Copyright 2008-2009, DataSoft Systems Bangladesh Limited (http://www.datasoft-bd.com)
+ * @link          http://www.datasoft-bd.com
+ * @package       mra-mfi-mis
+ * @since         mra-mfi-mis v 0.1
+ * @version       $Revision: 1167 $
+ * @author        $Author: Saroj Roy
+ * @modifiedby    $LastChangedBy: Taufiqul Islam $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 (Thu, 18 Dec 2008) $
+ * @license       Commercial License
+ */
+ ?>
+<!-- Navigation item -->
+          <ul>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/administration_24.png" border="0" alt="administrator" />&nbsp;Admin</a>
+                <ul>
+					<li><?php echo anchor('/users/','Manage User')?></li>
+					<li><?php echo anchor('/user_roles/','Manage User Role')?></li>
+					<li><?php echo anchor('/users/change_password','Change Password')?></li>
+					<li><?php echo anchor('/user_audit_trails/','User Audit Trail')?></li>
+					<li><?php echo anchor('/user_access_logs/','User Access Log')?></li>					
+					<li><?php echo anchor('/po_organizations/','Organizations Details')?></li>
+					<li><?php echo anchor('/config_generals/','General Configuration')?></li>
+					<li><?php echo anchor('/config_customized_ids/','Auto ID Configuration')?></li>
+					<li><?php echo anchor('/auths/logout/','Logout')?></li>
+									
+                </ul>
+            </li>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/configuration_16.png" border="0" alt="configuration" />&nbsp;Config</a>
+                <ul>
+					<li><?php echo anchor('/config_holidays/','Holidays')?></li>						
+					<li><?php echo anchor('/po_divisions/','Divisions')?></li>
+					<li><?php echo anchor('/po_districts/','Districts')?></li>
+					<li><?php echo anchor('/po_thanas/','Thanas')?></li>
+					<li><?php echo anchor('/po_unions_or_wards/','Unions/Wards')?></li>	
+					<li><?php echo anchor('/po_village_or_blocks/','Villages/blocks')?></li>					
+					<li><?php echo anchor('/po_working_areas/','Working Areas')?></li>										
+					<li><?php echo anchor('/po_regions/','PO Regions')?></li>
+					<li><?php echo anchor('/po_areas/','PO Areas')?></li>
+					<li><?php echo anchor('/po_zones/','PO Zones')?></li>
+					<li><?php echo anchor('/po_branches/','PO Branches')?></li>
+					<li><?php echo anchor('/po_funding_organizations/','Funding Organizations')?></li>
+					<li><?php echo anchor('/po_zone_area_details/','Zone Area Details')?></li>					
+													
+                </ul>		
+            </li>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/user_16.png" border="0" alt="staffs" />&nbsp;Employees</a>
+                <ul>
+					<li><?php echo anchor('/employees/','Employees')?></li>	
+					<li><?php echo anchor('/employee_departments/','Employee Departments')?></li>
+					<li><?php echo anchor('/employee_designations/','Employee Designations')?></li>					
+					<li><?php echo anchor('/employee_product_transfers','Employee Product Transfer')?></li>
+					<li><?php echo anchor('/employee_promotions/','Employee Promotion')?></li>
+					<li><?php echo anchor('/employee_branch_transfers','Employee Branch Transfer')?></li>
+					<li><?php echo anchor('/employee_terminations','Employee Termination')?></li>
+                </ul>		
+            </li>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/loan_24.png" border="0" alt="loans" />&nbsp;Samity</a>
+                <ul>
+					<li><?php echo anchor('/samities/','Samities')?></li>
+					<li><?php echo anchor('/samity_groups/','Samity Groups')?></li>			
+					<li><?php echo anchor('/samity_subgroups/','Samity SubGroups')?></li>	
+					<li><?php echo anchor('/samity_day_changes/','Samity Day Change')?></li>	
+					<li><?php echo anchor('#','Samity Transfer ??')?></li>		
+                </ul>              
+            </li>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/organization_16.png" border="0" alt="Members" />&nbsp;Members</a>
+                <ul>
+					<li><?php echo anchor('/members/','Member Information')?></li>
+					<li><?php echo anchor('/member_transfers/','Member Samity Transfer')?></li>
+					<li><?php echo anchor('/members/member_closing_index/','Member Closing')?></li>
+					<li><?php echo anchor('/member_products/','Member Primary Product Transfer')?></li>
+					<li><?php echo anchor('#','Member Status Change ??')?></li>			
+					<li><?php echo anchor('/migrations_members/','Migration Members')?></li>							
+					<li><?php echo anchor('/migrations_loan_savings/','Migration Savings & Loans')?></li>							
+                </ul>		
+            </li>
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/savings_24.png" border="0" alt="Loan & Savings" />&nbsp;Loan & Savings</a>
+                <ul>
+					<li><?php echo anchor('/savings/','Savings')?></li>
+					<li><?php echo anchor('/saving_deposites/','Saving Deposite')?></li>
+					<li><?php echo anchor('/saving_withdraws/','Saving Withdraw')?></li>
+					<li><?php echo anchor('/skt_collections/','SKT Collection')?></li>
+					<li><?php echo anchor('/products/','Products')?></li>
+					<li><?php echo anchor('/product_interest_rates/','Product Interest Rate')?></li>
+					<li><?php echo anchor('/loans/','Loan Entry')?></li>
+					<li><?php echo anchor('/loans/','Loan Reschedule')?></li>
+					<li><?php echo anchor('/loan_purposes/','Loan Purposes')?></li>	
+					<li><?php echo anchor('/loan_transactions/','Loan Transactions')?></li>										
+                </ul>             
+            </li>            
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/transaction_20.png" border="0" alt="Process" />&nbsp;Process</a>
+                <ul>
+					<li><?php echo anchor('/transactions/auto_process/','Auto Process')?></li>
+					<li><?php echo anchor('#','Transaction Authorization ??')?></li>
+					<li><?php echo anchor('/saving_deposites/authorization_index','Saving Deposite Authorization')?></li>
+<<<<<<< .mine
+					<li><?php echo anchor('/saving_withdraws/authorization_index','Saving withdraw Authorization')?></li>
+					<li><?php echo anchor('/loans/authorization_index','Loan Authorization')?></li>
+=======
+					<li><?php echo anchor('/saving_withdraws/authorization_index','Saving withdraw Authorization')?></li>
+					<li><?php echo anchor('/skt_collections/authorization_index','SKT Collection Authorization')?></li>
+					<li><?php echo anchor('/loans/authorization_index','Loan Authorization')?></li>
+>>>>>>> .r1299
+					<li><?php echo anchor('#','Mamber Authorization ??')?></li>
+					<li><?php echo anchor('#','Mamber Closing Authorization ??')?></li>
+					<li><?php echo anchor('#','Member Transfer Authorization ??')?></li>	
+					<li><?php echo anchor('#','Day End Process')?></li>	
+					<li><?php echo anchor('/process_month_ends/','Month End Process')?></li>					
+                </ul>             
+            </li>
+<!-- <li><a href="#"><img src="<?php echo base_url();?>media/images/report_16.png" border="0" alt="Reports" />&nbsp;Reports</a>
+                <ul>
+					<li><?php echo anchor('/po_mis_reports/','POMIS Reports')?></li>
+					<li><?php echo anchor('/regular_and_general_reports/','REGULAR & GENERAL REPORT - (BRANCH LEVEL)')?></li>		
+					<li><?php echo anchor('/register_reports/','REGISTER REPORT - (BRANCH LEVEL)')?></li>
+					<li><?php echo anchor('/consolidated_reports/','CONSOLIDATED REPORT - (HEADOFFICE LEVEL)')?></li>
+					<li><?php echo anchor('/additional_reports/','ADDITIONAL REPORT - (BRANCH LEVEL)')?></li>
+                </ul>             
+            </li>-->
+            <li><a href="#"><img src="<?php echo base_url();?>media/images/administration_24.png" border="0" alt="Accounts" />&nbsp;Accounts</a>
+                <ul>
+					<li><?php echo anchor('/acc_ledgers/','Chart of Accounts')?></li>
+					<li><?php echo anchor('/acc_opening_balances/','Opening Balance')?></li>
+					<li><?php echo anchor('/acc_auto_vouchers/','Set Auto Voucher')?></li>
+					<li><?php echo anchor('/acc_vouchers/','Voucher')?></li>
+					<li><?php echo anchor('#','Project')?></li>
+					<li><?php echo anchor('#','Reports')?>
+						<ul>
+							<li><?php echo anchor('/acc_reports/trial_balance_report_filter','Trial Balance')?>
+							<li><?php echo anchor('/acc_reports/balance_sheet_report_filter','Balance Sheet')?>
+							<li><?php echo anchor('/acc_reports/receipt_payment_filter','Receipt Payment')?>
+							<li><?php echo anchor('/acc_reports/cash_flow_filter','Cash Flow')?>
+							<li><?php echo anchor('/acc_reports/income_statment_filter','Income Statement')?>
+							<li><?php echo anchor('/acc_reports/cash_book_bank_book_filter','Cash-Bank Book')?>
+							<li><?php echo anchor('/acc_reports/ledger_report_filter','Ledger Report')?>
+							<li><?php echo anchor('/acc_reports/daily_transaction_filter','Daily Transaction')?>
+							<li><?php echo anchor('/acc_reports/ho_income_statement_filter','Headoffice Income Statement')?>
+						</ul>
+					</li>
+                </ul>
+            </li>
+          </ul>
+          

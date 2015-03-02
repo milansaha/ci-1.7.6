@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn_new/microfin/!svn/ver/3139/system/application/views/transactions
+END
+auto_process_edit.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn_new/microfin/!svn/ver/440/system/application/views/transactions/auto_process_edit.php
+END
+auto_process_add.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn_new/microfin/!svn/ver/3159/system/application/views/transactions/auto_process_add.php
+END
+auto_process_success.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn_new/microfin/!svn/ver/3159/system/application/views/transactions/auto_process_success.php
+END
+auto_process.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn_new/microfin/!svn/ver/2744/system/application/views/transactions/auto_process.php
+END

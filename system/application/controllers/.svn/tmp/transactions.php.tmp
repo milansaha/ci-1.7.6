@@ -1,0 +1,390 @@
+<?php
+/** 
+	* PO Branch Informatin Controller Class.
+	* @pupose		Manage PO Funding Organizations information
+	*		
+	* @filesource	./system/application/controllers/po_branches.php	
+	* @package		microfin 
+	* @subpackage	microfin.system.application.controllers.po_branches
+	* @version      $Revision: 1 $
+	* @author       $Author: S. Abdul Matin $	
+	* @lastmodified $Date: 2011-01-04 $	 
+*/ 
+class Transactions extends MY_Controller {
+	
+	function __construct()
+	{
+		parent::__construct();		
+		//Loading Helper Class
+		$this->load->helper(array('form','url'));
+		//Loading the model. The first param-> Model Name, 2nd Param: Custom Name, 3rd Param: AutoLoad Database. If 3rd parameter is not used, you have to load the database manually
+		$this->load->model('Transaction','',TRUE);		
+	}
+	function auto_process()
+	{
+		$data['branch_id'] = $this->get_branch_id();
+		$data['current_date'] = $this->get_current_date(); 
+		$data['dayname'] = date("D",strtotime($data['current_date']));	  
+
+		$samity_infos = $this->Transaction->get_samity_info($data);
+
+		foreach($samity_infos as  $key=>$samity_info){				
+			$data['auto_process'] = $this->Transaction->get_samity_wise_member_info($samity_info->samity_id);	
+			if(count($data['auto_process'])>0){
+				$samity_infos[$key]->total_member =count($data['auto_process']) ;
+			}
+		}
+
+		$data['samity_infos']= $samity_infos;
+		$data['title']='Auto Process';
+		
+		$this->layout->view('/transactions/auto_process',$data);
+		
+	}
+	
+	function auto_process_add($samity_id=null)
+	{		
+		$system_user=$this->session->userdata('system.user');
+		
+		$data['headline']='Auto Process Save';
+		$this->_prepare_validation_save();
+<<<<<<< .mine
+		//If the form is posted, perform the validation. 
+		//is_posted is a hidden input used to detect if the form is posted
+		
+		if($_POST){
+			$data=$this->_get_posted_data();
+		}	
+		//Perform the Validation	
+			if(isset($samity_id)){		
+				$data['auto_process'] = $this->Transaction->get_samity_wise_member_info($samity_id);
+				$backup = $data['samity_info'] = $this->Transaction->samity_read($samity_id);
+			}elseif(isset($data['samity_id'])){
+				$data['auto_process'] = $this->Transaction->get_samity_wise_member_info($data['samity_id']);
+				$backup = $data['samity_info'] = $this->Transaction->samity_read($data['samity_id']);
+				}			
+				
+			if ($this->form_validation->run() === TRUE)
+					{						
+						$members_id=$this->input->post('member_id');
+						$is_attendence =$this->input->post('ch_attendence');
+						$primary_product_id=$this->input->post('primary_product_id');
+						$loans_id=$this->input->post('loan_id');
+						$loan_product_id=$this->input->post('loan_product_id');
+						$savings_product_id=$this->input->post('savings_product_id');
+						$saving_id=$this->input->post('savings_id');
+						$samity_date=$this->input->post('samity_date');
+						$loan_amount=$this->input->post('txt_loan_amount');
+						$savings_amount=$this->input->post('txt_savings_amount');
+						$total_member = count($members_id);						
+						$is_saved = true;
+						$last_insert_id=array();
+						for($i=0;$i<$total_member;$i++){
+							//loan
+							$data=array();
+							if($loans_id[$i]>0) {
+								$data['loan_id'] = $loans_id[$i];
+								$data['transaction_date'] = $samity_date;
+								$data['product_id'] = $loan_product_id[$i];						
+								$data['transaction_amount'] = $loan_amount[$i];
+								$data['installment_number'] = 1;
+								$data['entry_by'] = $system_user['id'];
+								$data['entry_date'] = $samity_date;
+								$data['is_authorized'] = 0;
+								$data['branch_id'] = $_POST['branch_id'];
+								$data['samity_id'] = $_POST['samity_id'];
+								$data['is_auto_process'] = 1;						
+								$is_saved = $this->Transaction->loan_transaction_add($data);
+								$last_insert_id['loan_trans_id'][$i] = $this->db->insert_id() ;
+=======
+		//If the form is posted, perform the validation. is_posted is a hidden input used to detect if the form is posted
+		if($samity_id)
+		{
+			//$data=$this->_get_posted_data();
+			//Perform the Validation
+			
+			$data['auto_process'] = $this->Transaction->get_samity_wise_member_info($samity_id);
+			$backup = $data['samity_info'] = $this->Transaction->samity_read($samity_id);
+			//print_r($data['auto_process']);
+			if(empty($data['auto_process'])){	
+				$this->session->set_flashdata('message','The Samity has no member.');
+				redirect('/transactions/auto_process/');
+			
+			}
+		}
+		if($_POST)
+		{	//echo 'hiiii';
+			$backup = $data['samity_info'] = $this->Transaction->samity_read($_POST['samity_id']);
+			if ($this->form_validation->run() === TRUE)
+				{
+					$members_id=$this->input->post('member_id');
+					$is_attendence =$this->input->post('ch_attendence');
+					$primary_product_id=$this->input->post('primary_product_id');
+					$loans_id=$this->input->post('loan_id');
+					$loan_product_id=$this->input->post('loan_product_id');
+					$savings_product_id=$this->input->post('savings_product_id');
+					$saving_id=$this->input->post('savings_id');
+					//$samity_date=$this->input->post('samity_date');
+					$samity_date = $this->get_current_date(); 
+					$loan_amount=$this->input->post('txt_loan_amount');
+					$savings_amount=$this->input->post('txt_savings_amount');
+					$total_member = count($members_id);
+					//echo $total_member;
+					$is_saved = true;
+					$last_insert_id=array();
+					for($i=0;$i<$total_member;$i++){
+						//loan
+						$data=array();
+						if($loans_id[$i]>0) {
+							$data['loan_id'] = $loans_id[$i];
+							$data['transaction_date'] = $samity_date;
+							$data['product_id'] = $loan_product_id[$i];						
+							$data['transaction_amount'] = $loan_amount[$i];
+							$data['installment_number'] = 1;
+							$data['entry_by'] = $system_user['id'];
+							$data['entry_date'] = $samity_date;
+							$data['is_authorized'] = 0;
+							$data['branch_id'] = $_POST['branch_id'];
+							$data['samity_id'] = $_POST['samity_id'];
+							$data['is_auto_process'] = 1;						
+							$is_saved = $this->Transaction->loan_transaction_add($data);
+							$last_insert_id['loan_trans_id'][$i] = $this->db->insert_id() ;
+						
+						}				
+						//saving
+						$data=array();
+						if($saving_id[$i]>0) {
+							$data['member_id'] = $members_id[$i];
+							$data['savings_id'] = $saving_id[$i];
+							$data['member_primary_product_id'] = $primary_product_id[$i];
+							$data['saving_products_id'] = $savings_product_id[$i];						
+							$data['transaction_date'] = $samity_date;
+							$data['transaction_type'] = 'DEP';						
+							$data['amount'] = $savings_amount[$i];
+							$data['payment_received_by'] = $system_user['id'];
+							$data['is_authorized'] = 0;
+							$data['entry_by'] = $system_user['id'];						
+							$data['branch_id'] = $_POST['branch_id'];
+							$data['samity_id'] = $_POST['samity_id'];
+							$is_saved = $this->Transaction->saving_transaction_add($data);
+							$last_insert_id['saving_trans_id'][$i] = $this->db->insert_id() ;
+						}
+						//ateendence
+						$data_attendence = array();
+						$data_attendence['member_id'] = $members_id[$i];
+						$data_attendence['samity_id'] = $_POST['samity_id'];
+						$data_attendence['attendance_status'] = isset($is_attendence[$i])?$is_attendence[$i]:0;
+						$data_attendence['samity_id'] = $_POST['samity_id'];
+						$data_attendence['branch_id'] = $_POST['branch_id'];
+						$data_attendence['major_product_id'] = $primary_product_id[$i];
+						$data_attendence['date'] = $samity_date;
+						//print_r($data_attendence);
+						
+						$is_saved = $this->Transaction->member_attendence_add($data_attendence);
+>>>>>>> .r2958
+								//print_r($is_saved );
+								//die();							
+<<<<<<< .mine
+							}				
+							//saving
+							$data=array();
+							if($saving_id[$i]>0) {
+								$data['member_id'] = $members_id[$i];
+								$data['savings_id'] = $saving_id[$i];
+								$data['member_primary_product_id'] = $primary_product_id[$i];
+								$data['saving_products_id'] = $savings_product_id[$i];						
+								$data['transaction_date'] = $samity_date;
+								$data['transaction_type'] = 'DEP';						
+								$data['amount'] = $savings_amount[$i];
+								$data['payment_received_by'] = $system_user['id'];
+								$data['is_authorized'] = 0;
+								$data['entry_by'] = $system_user['id'];						
+								$data['branch_id'] = $_POST['branch_id'];
+								$data['samity_id'] = $_POST['samity_id'];
+								$is_saved = $this->Transaction->saving_transaction_add($data);
+								$last_insert_id['saving_trans_id'][$i] = $this->db->insert_id() ;
+								
+								//ateendence
+								$data_attendence['member_id'] = $members_id[$i];
+								$data_attendence['samity_id'] = $_POST['samity_id'];
+								$data_attendence['attendance_status'] = isset($is_attendence[$i])?$is_attendence[$i]:0;
+								$data_attendence['samity_id'] = $_POST['samity_id'];
+								$data_attendence['branch_id'] = $_POST['branch_id'];
+								$data_attendence['major_product_id'] = $primary_product_id[$i];
+								$data_attendence['date'] = $samity_date;								
+								
+								$is_saved = $this->Transaction->member_attendence_add($data_attendence);
+							}
+						}
+						if($is_saved)
+						{
+							$this->session->set_flashdata('message','All Transaction has been added successfully');
+							
+							$saved_data['posted'] = $_POST;
+							$saved_data['samity_info'] = $backup;
+							$saved_data['last_id'] = $last_insert_id;
+							$saved_data['is_saved'] = true;
+							$saved_data['samity_date'] = $samity_date;
+							redirect('/transactions/auto_process', 'refresh');
+						}
+=======
+>>>>>>> .r2958
+<<<<<<< .mine
+					}				
+		
+			//If data is not posted or validation fails, the add view is displayed
+			if(isset($is_saved) and $is_saved){
+				$this->layout->view('/transactions/auto_process_success',$saved_data);			
+			}	
+			else {
+				$this->layout->view('/transactions/auto_process_add',$data);
+			}
+	
+=======
+					}
+					if($is_saved)
+					{
+						//$this->session->set_flashdata('message','All Transaction has been added successfully');
+						//print_r($_POST);
+						$saved_data['posted'] = $_POST;
+						$saved_data['samity_info'] = $backup;
+						$saved_data['last_id'] = $last_insert_id;
+						$saved_data['is_saved'] = true;
+						$saved_data['samity_date'] = $samity_date;
+						//redirect('/transactions/auto_process_success/', 'refresh');
+					}
+				}				
+		
+		}		
+		//If data is not posted or validation fails, the add view is displayed
+		if(isset($is_saved) and $is_saved){
+			$this->layout->view('/transactions/auto_process_success',$saved_data);			
+		}	else {
+			$this->layout->view('/transactions/auto_process_add',$data);
+		}
+>>>>>>> .r2958
+	}
+<<<<<<< .mine
+	
+=======
+>>>>>>> .r2958
+	function auto_process_success(){
+		
+	}
+	
+	
+	function auto_process_edit($samity_id,$samity_date)
+	{
+		$data['headline']='Auto Process Save';
+		$this->_prepare_validation_save();
+		//If the form is posted, perform the validation. is_posted is a hidden input used to detect if the form is posted
+		if($_POST)
+		{
+			//$data=$this->_get_posted_data();
+			//Perform the Validation
+			
+			$data['auto_process'] = $this->Transaction->get_samity_wise_member_info($_POST['samity_id']);
+			$backup = $data['samity_info'] = $this->Transaction->samity_read($_POST['samity_id']);
+			if ($this->form_validation->run() === TRUE)
+			{
+				$members_id=$this->input->post('member_id');
+				$loans_id=$this->input->post('loan_id');
+				$saving_id=$this->input->post('savings_id');
+				$samity_date=$this->input->post('samity_date');
+				$loan_amount=$this->input->post('txt_loan_amount');
+				$savings_amount=$this->input->post('txt_savings_amount');
+				$total_member = count($members_id);
+				//echo $total_member;
+				$is_saved = true;
+				$last_insert_id=array();
+				for($i=0;$i<$total_member;$i++){
+					//loan
+					$data=array();
+					if($loans_id[$i]>0) {
+						$data['loan_id'] = $loans_id[$i];
+						$data['transaction_date'] = $samity_date;
+						$data['transaction_code'] = $loans_id[$i];
+						$data['payment_type'] = 'SOFT';
+						$data['amount'] = $loan_amount[$i];
+						$data['installment_number'] = 1;
+						$data['received_by'] = 1;
+						$data['authorization_status'] = false;
+						$data['user_id'] = 1;
+						$data['is_deleted'] = false;
+						$data['is_auto_process'] = true;						
+						$is_saved = $this->Transaction->loan_transaction_add($data);
+						$last_insert_id['loan_trans_id'][$i] = $this->db->insert_id() ;
+					}
+					//saving
+					$data=array();
+					if($saving_id[$i]>0){
+						$data['savings_id'] = $saving_id[$i];
+						$data['transaction_code'] = $saving_id[$i];
+						$data['transaction_date'] = $samity_date;
+						$data['transaction_type'] = 'DEP';
+						$data['payment_type'] = 'CASH';
+						$data['amount'] = $savings_amount[$i];
+						$data['payment_received_by'] = 1;
+						$data['authorization_status'] = false;
+						$data['user_id'] = 1;
+						$data['is_deleted'] = false;
+						$data['is_auto_process'] = true;
+						$is_saved = $this->Transaction->saving_transaction_add($data);
+						$last_insert_id['saving_trans_id'][$i] = $this->db->insert_id();
+					}
+				}
+				if($is_saved)
+				{
+					$saved_data['posted'] = $_POST;
+					$saved_data['samity_info'] = $backup;
+					$saved_data['last_id'] = $last_insert_id;
+					$saved_data['is_saved'] = true;
+					$saved_data['samity_date'] = $samity_date;
+					//redirect('/transactions/auto_process_success/', 'refresh');
+				}
+			}
+		}
+		//If data is not posted or validation fails, the add view is displayed
+		if(isset($is_saved) and $is_saved){
+			$this->layout->view('/transactions/auto_process_success',$saved_data);			
+		}	else {
+			$this->layout->view('/transactions/auto_process_add',$data);
+		}
+	}
+	function _load_combo_data($info)
+	{
+		//This function is for listing of samities	
+		$data['samity_infos'] = $this->Transaction->get_samity_info($info);	
+		return $data;
+	}
+	function _prepare_validation()
+	{
+		//Loading Validation Library to Perform Validation
+		$this->load->library('form_validation');	
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+		//Setting Validation Rule			
+		$this->form_validation->set_rules('cbo_samity','Samity ID','trim|xss_clean|required|numeric');
+	}
+	function _prepare_validation_save()
+	{
+		//Loading Validation Library to Perform Validation
+		$this->load->library('form_validation');	
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+		//Setting Validation Rule
+		$this->form_validation->set_rules('samity_id', 'Samity', 'trim|xss_clean|required|numeric');
+		$this->form_validation->set_rules('txt_loan_amount[]', 'Loan Anount', 'trim|xss_clean|required|numeric');
+		$this->form_validation->set_rules('txt_savings_amount[]', 'Savings Collection', 'trim|xss_clean|required|numeric');
+		$this->form_validation->set_rules('ch_loan_full_member[]', '', '');
+		$this->form_validation->set_rules('ch_loan_partial_member[]', '', '');
+		$this->form_validation->set_rules('ch_loan_zero_member[]', '', '');
+		$this->form_validation->set_rules('ch_savings_full_member[]', '', '');
+		$this->form_validation->set_rules('ch_savings_partial_member[]', '', '');
+		$this->form_validation->set_rules('ch_savings_zero_member[]', '', '');
+	}
+	function _get_posted_data()
+	{
+		$data=array();
+		$data['samity_id']=$this->input->post('samity_id');
+		return $data;
+	}
+}

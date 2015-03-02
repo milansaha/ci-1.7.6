@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn_new/microfin/!svn/ver/2968/system/application/views/user_roles
+END
+access_denied.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn_new/microfin/!svn/ver/469/system/application/views/user_roles/access_denied.php
+END
+permissions.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn_new/microfin/!svn/ver/446/system/application/views/user_roles/permissions.php
+END
+user_wise_branch_access.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn_new/microfin/!svn/ver/754/system/application/views/user_roles/user_wise_branch_access.php
+END
+edit.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/2968/system/application/views/user_roles/edit.php
+END
+index.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/2954/system/application/views/user_roles/index.php
+END
+add.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn_new/microfin/!svn/ver/2968/system/application/views/user_roles/add.php
+END

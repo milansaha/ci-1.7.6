@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/3311/system/application/views/consolidated_reports
+END
+component_wise_daily_collection_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn_new/microfin/!svn/ver/784/system/application/views/consolidated_reports/component_wise_daily_collection_report.php
+END
+consolidated_balancing_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn_new/microfin/!svn/ver/3311/system/application/views/consolidated_reports/consolidated_balancing_report.php
+END
+index.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn_new/microfin/!svn/ver/1417/system/application/views/consolidated_reports/index.php
+END
+component_wise_daily_collection_report_index.php
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn_new/microfin/!svn/ver/784/system/application/views/consolidated_reports/component_wise_daily_collection_report_index.php
+END
+consolidated_balancing_report_index.php
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn_new/microfin/!svn/ver/3311/system/application/views/consolidated_reports/consolidated_balancing_report_index.php
+END

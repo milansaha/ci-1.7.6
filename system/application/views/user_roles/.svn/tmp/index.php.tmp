@@ -1,0 +1,64 @@
+
+<h3>User's Role Information</h3>
+<?php echo form_open('user_roles/index'); ?>
+<script type="text/javascript">
+/*function areaOnFocus(element, inputText)
+
+{
+	 if(element.value == inputText)
+	 {
+		  element.value='';
+	 }
+}
+function areaOnBlur(element, inputText)
+{
+	 if(element.value=='')
+	 {
+		  element.value = inputText;
+	 }
+}
+*/
+</script>
+<div id="filter"><p>Filter:</p>
+	<table style="padding:0px;" cellspacing="0px" cellpadding="0px" border="0" class="filter">
+		<tr>
+			<td>
+				<?php 
+						//$attribute = 'onfocus="if(this.value==this.defaultValue) this.value=\'\';"';
+						$attribute = 'class="search_input" title="By name or Description"'; 
+						//$attribute = 'onfocus= "javascript:areaOnFocus(srchtxt, \'search...\');" onblur= "javascript:areaOnBlur(srchtxt, \'search...\');"';
+						echo form_input('txt_name',set_value('txt_name',isset($session_data['name'])?$session_data['name']:""),$attribute);?>
+			</td>
+			<td>
+				<?php echo form_submit('submit','Filter');?>
+			</td>
+		</tr>
+	</table>
+</div>
+<table class="sortable" cellspacing="0px" cellpadding="0px">
+<tr>
+	<th>#</th>
+	<th>Role Name</th>
+	<th>Role Description</th>	
+	<th>Action</th>
+</tr>
+<?php 
+	$i=0;
+	foreach ($user_roles as $row):
+	$i++;
+?>
+<tr <?php if($i % 2 == 0){ echo 'class="evenrow";'; echo ' bgcolor="#fff"';}else{echo 'class="oddrow"';}?> >
+	 <td class="serial"><?php echo $i;?></td>
+	<td><?php echo $row->role_name;?></td>
+	<td><?php echo $row->role_description;?></td>
+	<td>
+	<?php echo anchor('user_role_wise_privileges/index/'.$row->id, 'Edit Permission');?> 
+	<?php echo anchor('user_roles/edit/'.$row->id,img(array('src'=>base_url().'media/images/edit.gif','border'=>'0','alt'=>'edit')),array('class'=>'imglink'));   ?>
+	<?php echo anchor('user_roles/delete/'.$row->id, img(array('src'=>base_url().'media/images/delete.gif','border'=>'0','alt'=>'edit')),
+					array('class'=>'delete','onclick'=>"return confirm('" . DELETE_CONFIRMATION_MESSAGE . "')"));?>	
+	</td>	
+</tr>
+<?php endforeach;?>
+</table>
+<div align="center" id="paging"><?php echo $this->pagination->create_links(); ?></div>
+<?php echo form_close(); ?>

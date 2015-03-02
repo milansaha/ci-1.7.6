@@ -1,0 +1,503 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn_new/microfin/!svn/ver/3502/system/application/models
+END
+saving_transaction.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn_new/microfin/!svn/ver/1423/system/application/models/saving_transaction.php
+END
+user_audit_trail.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn_new/microfin/!svn/ver/3177/system/application/models/user_audit_trail.php
+END
+employee_branch_transfer.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn_new/microfin/!svn/ver/3300/system/application/models/employee_branch_transfer.php
+END
+loan_purpose.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn_new/microfin/!svn/ver/1782/system/application/models/loan_purpose.php
+END
+product_interest_rate.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn_new/microfin/!svn/ver/2211/system/application/models/product_interest_rate.php
+END
+report.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn_new/microfin/!svn/ver/2660/system/application/models/report.php
+END
+regular_and_general_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn_new/microfin/!svn/ver/3455/system/application/models/regular_and_general_report.php
+END
+po_funding_organization.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn_new/microfin/!svn/ver/1684/system/application/models/po_funding_organization.php
+END
+register_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/3464/system/application/models/register_report.php
+END
+saving_attendance_register.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn_new/microfin/!svn/ver/1148/system/application/models/saving_attendance_register.php
+END
+samity_group.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn_new/microfin/!svn/ver/1508/system/application/models/samity_group.php
+END
+report_modeler.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/1148/system/application/models/report_modeler.php
+END
+member_closing.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/1414/system/application/models/member_closing.php
+END
+employee_promotion.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn_new/microfin/!svn/ver/3303/system/application/models/employee_promotion.php
+END
+loan_product_category.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn_new/microfin/!svn/ver/2335/system/application/models/loan_product_category.php
+END
+po_thana.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn_new/microfin/!svn/ver/2063/system/application/models/po_thana.php
+END
+loan_product.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn_new/microfin/!svn/ver/2865/system/application/models/loan_product.php
+END
+user_role_wise_privilege.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn_new/microfin/!svn/ver/1896/system/application/models/user_role_wise_privilege.php
+END
+loan_reschedule.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/3215/system/application/models/loan_reschedule.php
+END
+report_savings_data.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/3336/system/application/models/report_savings_data.php
+END
+user_role.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn_new/microfin/!svn/ver/2074/system/application/models/user_role.php
+END
+saving_withdraw.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/1818/system/application/models/saving_withdraw.php
+END
+educational_qualification.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn_new/microfin/!svn/ver/3211/system/application/models/educational_qualification.php
+END
+config_general.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/3078/system/application/models/config_general.php
+END
+po_working_area.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/2469/system/application/models/po_working_area.php
+END
+member_product.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/2867/system/application/models/member_product.php
+END
+member_type.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn_new/microfin/!svn/ver/1148/system/application/models/member_type.php
+END
+process_month_end.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn_new/microfin/!svn/ver/3462/system/application/models/process_month_end.php
+END
+member_discontinue.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn_new/microfin/!svn/ver/1148/system/application/models/member_discontinue.php
+END
+pass_book_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn_new/microfin/!svn/ver/3259/system/application/models/pass_book_report.php
+END
+saving_advance_register.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn_new/microfin/!svn/ver/1148/system/application/models/saving_advance_register.php
+END
+user.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn_new/microfin/!svn/ver/1850/system/application/models/user.php
+END
+config_holiday.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/2979/system/application/models/config_holiday.php
+END
+employee.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn_new/microfin/!svn/ver/3306/system/application/models/employee.php
+END
+po_district.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn_new/microfin/!svn/ver/1667/system/application/models/po_district.php
+END
+po_zone_area_detail.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/1148/system/application/models/po_zone_area_detail.php
+END
+employee_product_transfer.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn_new/microfin/!svn/ver/2464/system/application/models/employee_product_transfer.php
+END
+saving_product.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/3072/system/application/models/saving_product.php
+END
+user_login_attempts.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/1315/system/application/models/user_login_attempts.php
+END
+loan.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn_new/microfin/!svn/ver/3495/system/application/models/loan.php
+END
+member_detail.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn_new/microfin/!svn/ver/1148/system/application/models/member_detail.php
+END
+po_village_or_block.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/3172/system/application/models/po_village_or_block.php
+END
+po_branch.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn_new/microfin/!svn/ver/3193/system/application/models/po_branch.php
+END
+samity_subgroup.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/1499/system/application/models/samity_subgroup.php
+END
+user_autologin.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/2105/system/application/models/user_autologin.php
+END
+perm_action.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn_new/microfin/!svn/ver/1148/system/application/models/perm_action.php
+END
+process_day_end.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/3462/system/application/models/process_day_end.php
+END
+po_organization.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/1148/system/application/models/po_organization.php
+END
+migrations_member.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn_new/microfin/!svn/ver/1148/system/application/models/migrations_member.php
+END
+additional_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn_new/microfin/!svn/ver/3340/system/application/models/additional_report.php
+END
+loan_schedule.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn_new/microfin/!svn/ver/1494/system/application/models/loan_schedule.php
+END
+samity.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn_new/microfin/!svn/ver/3443/system/application/models/samity.php
+END
+perm_controller.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/1148/system/application/models/perm_controller.php
+END
+member.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn_new/microfin/!svn/ver/3294/system/application/models/member.php
+END
+samity_day_change.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn_new/microfin/!svn/ver/1148/system/application/models/samity_day_change.php
+END
+po_zone.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn_new/microfin/!svn/ver/3165/system/application/models/po_zone.php
+END
+skt_collection.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/2234/system/application/models/skt_collection.php
+END
+report_loan_data.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn_new/microfin/!svn/ver/3395/system/application/models/report_loan_data.php
+END
+po_region.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn_new/microfin/!svn/ver/3164/system/application/models/po_region.php
+END
+po_mis_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn_new/microfin/!svn/ver/3373/system/application/models/po_mis_report.php
+END
+transaction.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn_new/microfin/!svn/ver/3489/system/application/models/transaction.php
+END
+saving.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn_new/microfin/!svn/ver/1752/system/application/models/saving.php
+END
+loan_transaction.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn_new/microfin/!svn/ver/3129/system/application/models/loan_transaction.php
+END
+user_access_log.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/3185/system/application/models/user_access_log.php
+END
+employee_history.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn_new/microfin/!svn/ver/1148/system/application/models/employee_history.php
+END
+employee_department.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/1692/system/application/models/employee_department.php
+END
+employee_designation.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn_new/microfin/!svn/ver/1920/system/application/models/employee_designation.php
+END
+consolidated_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn_new/microfin/!svn/ver/3313/system/application/models/consolidated_report.php
+END
+transaction_authorization.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn_new/microfin/!svn/ver/3502/system/application/models/transaction_authorization.php
+END
+po_area.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn_new/microfin/!svn/ver/3163/system/application/models/po_area.php
+END
+samity_employee_transfer.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn_new/microfin/!svn/ver/2625/system/application/models/samity_employee_transfer.php
+END
+samity_employee_change.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn_new/microfin/!svn/ver/2724/system/application/models/samity_employee_change.php
+END
+member_transfer.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn_new/microfin/!svn/ver/2209/system/application/models/member_transfer.php
+END
+savings_refund_register_report.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn_new/microfin/!svn/ver/1148/system/application/models/savings_refund_register_report.php
+END
+saving_deposit.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/1428/system/application/models/saving_deposit.php
+END
+po_division.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn_new/microfin/!svn/ver/1148/system/application/models/po_division.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn_new/microfin/!svn/ver/1/system/application/models/index.html
+END
+user_resource.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn_new/microfin/!svn/ver/1948/system/application/models/user_resource.php
+END
+po_unions_or_ward.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn_new/microfin/!svn/ver/2053/system/application/models/po_unions_or_ward.php
+END
+user_login_profile.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn_new/microfin/!svn/ver/1345/system/application/models/user_login_profile.php
+END
+loan_scheduler.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn_new/microfin/!svn/ver/1156/system/application/models/loan_scheduler.php
+END
+config_customized_id.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn_new/microfin/!svn/ver/2141/system/application/models/config_customized_id.php
+END
+employee_termination.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn_new/microfin/!svn/ver/3322/system/application/models/employee_termination.php
+END

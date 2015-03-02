@@ -1,0 +1,770 @@
+<?php
+/** 
+	* Member Controller Class. 
+	* @pupose		Manage Member information
+	*		
+	* @filesource	\app\model\po_members_controller.php	
+	* @package		microfin 
+	* @subpackage	microfin.model.po_members_controller
+	* @version      $Revision: 1 $
+	* @author       $Author: Md. Kamrul Islam Liton $	
+	* @lastmodified $Date: 2011-01-05 $	 
+*/
+/**
+ * Members
+ *
+ * @package microfin
+ * @author 9022391199
+ * @copyright 2011
+ * @version $Id$
+ * @access public
+ */
+
+class Members extends MY_Controller {
+	
+	
+	function __construct()
+	{
+		parent::__construct();		
+		//Loading Helper Class
+		$this->load->helper(array('form','jquery','date'));
+		//Loading the model. The first param-> Model Name, 2nd Param: Custom Name, 3rd Param: AutoLoad Database. If 3rd parameter is not used, you have to load the database manually
+		$this->load->model(array('Member','Samity','Educational_qualification','Config_customized_id','Po_branch','Loan_product_category','Loan_product'),'',TRUE);
+		
+		//$this->output->enable_profiler(1);		
+	}
+
+	function index()
+	{
+		$this->load->helper(array('text'));
+		$cond= "";
+		$session_data = $this->session->userdata('members.index');
+		//print_r($session_data);die;
+		if(isset($_POST['txt_name']) && isset($_POST['cbo_samity'])){
+			$cond['name'] = $_POST['txt_name'];
+			$cond['cbo_samity'] = $_POST['cbo_samity'];
+			$sessionArray = array( 'members.index'=>array('name'=>$cond['name'],'cbo_samity'=>$cond['cbo_samity']));
+			$this->session->unset_userdata('members.index');
+			$this->session->set_userdata($sessionArray);
+		} elseif(is_array($session_data)) {
+			$cond['name'] = $session_data['name'];
+			$cond['cbo_samity'] = $session_data['cbo_samity'];
+		} else {
+			$this->session->unset_userdata('members.index');
+		} 
+		$cond['cbo_branch'] = $this->get_branch_id();
+		
+		$data['samities'] = $this->Samity->get_samity_list($cond['cbo_branch']);	
+		// load pagination class
+		$this->load->library('pagination');
+		$total = $this->Member->row_count($cond);
+		
+		//Initializing Pagination
+		$config['base_url'] = site_url('/members/index/');
+		$config['total_rows'] = $total;
+		$config['per_page'] = ROW_PER_PAGE;		
+		$this->pagination->initialize($config);	
+		
+		//Loading data by model function call
+		$data['members'] = $this->Member->get_list(ROW_PER_PAGE, (int)$this->uri->segment(3),$cond);	
+		$data['counter'] = (int)$this->uri->segment(3);
+        $data['title']='Member Information';
+        $data['headline']='Member Information';
+		$this->layout->view('/members/index',$data);
+	}
+	
+	
+	function view($member_id = null)
+	{	
+		//If ID is not provided, redirecting to index page
+		if(empty($member_id) && !$_GET)
+		{
+			$this->session->set_flashdata('message','Member ID is not provided');
+			redirect('/members/index/', 'refresh');
+		}
+			
+		//Load data from database
+		$data['row'] = $this->Member->get_member_view_detail($member_id);	
+		//If data is not posted or validation fails, the add view is displayed
+		$data['title'] = 'View Member';
+        $data['headline'] = 'Member\'s Detail Information';
+		$this->layout->view('members/view',$data);		
+	}
+	function add()
+	{
+		$this->_prepare_validation();
+		//If the form is posted, perform the validation. is_posted is a hidden input used to detect if the form is posted
+		$members_prevoius_data=$this->session->userdata('members.add');
+		if(!empty($members_prevoius_data)) {
+			$row = $this->__array_to_object($members_prevoius_data);			
+		}	
+		//print_r($user);
+		if($_POST)
+		{
+			$data=$this->_get_posted_data();
+			//load session data
+			$user=$this->session->userdata('system.user');		
+			$data['created_by']=$user['id'];		
+			$data['created_on']=date("Y-m-d");	
+			$row = $this->__array_to_object($data);	
+			$sessionArray = array( 'members.add'=>array('samity_id'=>$row->samity_id,'group_id'=>$row->group_id,'present_village_ward'=>$row->present_village_ward,'permanent_village_ward'=>$row->permanent_village_ward,'registration_date'=>$row->registration_date));
+			$this->session->unset_userdata('members.add');
+			$this->session->set_userdata($sessionArray);
+					
+			//Perform the Validation
+			if ($this->form_validation->run() === TRUE)
+			{
+				//Validation is OK. So, add this data and redirect to the index page
+				if($this->Member->add($data))
+				{
+					// delete session image data
+					$this->session->unset_userdata('txt_member_picture.file_name');
+					
+					$this->session->set_flashdata('message',ADD_MESSAGE);
+					redirect('/members/add/', 'refresh');
+					
+				} 
+			}else {
+				$del_member_picture = $this->session->userdata('txt_member_picture.file_name');
+				
+				if (!empty($del_member_picture)) {
+				    @unlink(IMAGE_UPLOAD_PATH.$del_member_picture);
+				}
+				$this->session->unset_userdata('txt_member_picture.file_name');
+				}
+		}
+		//Load data from database
+		$cond = array();
+		if(isset($row)){
+			
+			$cond = array('cbo_samity'=>$row->samity_id,'cbo_samity_group'=>$row->group_id);
+			}
+			$data = $this->_load_combo_data($cond);
+			if(isset($row)){
+			$data['row'] = $row;
+			$members_code_info = $this->__member_auto_id($row->samity_id);
+			$row->code = $members_code_info['members_code'];
+			$row->id_sequence_no = $members_code_info['id_sequence_no'];
+			$row->gender = $this->Samity->get_samity_type_by_samity_id($row->samity_id);
+			$row->gender = ($row->gender == 'F')?"Female":"Male";	
+			$working_area_info=$this->Member->get_working_area_info($row->present_village_ward);
+			
+			//print_r($working_area_info);
+			if(!empty($working_area_info)) {
+				$data['row']->present_village_ward_name = $working_area_info->name;
+				$data['row']->present_village_ward_detail_info = $working_area_info->village_name.', '.$working_area_info->thana_name.','.$working_area_info->district_name;	
+			}
+			
+			$working_area_info=$this->Member->get_working_area_info($row->permanent_village_ward);
+			if(!empty($working_area_info)) {
+				$data['row']->permanent_village_ward_name = $working_area_info->name;
+				$data['row']->permanent_village_ward_detail_info = $working_area_info->village_name.', '.$working_area_info->thana_name.','.$working_area_info->district_name;	
+			}
+		}
+		//If data is not posted or validation fails, the add view is displayed
+		$data['title']='Add Member';
+        $data['headline'] = 'Add New';
+		$this->layout->view('/members/save',$data);				
+	}	
+	
+	function edit($member_id=null)
+	{
+		//If ID is not provided, redirecting to index page
+		if(empty($member_id) && !$_POST)
+		{
+			$this->session->set_flashdata('warning','Member ID is not provided');
+			redirect('/members/index/', 'refresh');
+		}
+		
+		//If the form is posted, perform the validation. is_posted is a hidden input used to detect if the form is posted
+		if($_POST)
+		{
+			//Perform the Validation
+			$data=$this->_get_posted_data();
+			$this->_prepare_validation();
+				
+			$member_id=$this->input->post('member_id');
+			
+			if ($this->form_validation->run() === TRUE)
+			{	
+                ////load session data
+				$user=$this->session->userdata('system.user');					
+				$data['updated_by']=$user['id'];		
+				$data['updated_on']=date("Y-m-d");				
+				$data['id']=$this->input->post('member_id');
+				//Validation is OK. So, add this data and redirect to the index page
+				if($this->Member->edit($data))
+				{
+					// delete session image data
+					$this->session->unset_userdata('txt_member_picture.file_name');
+					// delete exitng photo.
+					if (!empty($_POST['txt_member_picture_edit'] )) {
+					    @unlink((IMAGE_UPLOAD_PATH.$_POST['txt_member_picture_edit']));
+					    
+					} 
+					$this->session->set_flashdata('message',EDIT_MESSAGE);
+					redirect('/members/index/', 'refresh');
+				}
+			}
+			else {
+				// delete uploaed image if data save failed			
+				$del_member_picture = $this->session->userdata('txt_member_picture.file_name');
+				if (!empty($del_member_picture)) {
+				    @unlink(IMAGE_UPLOAD_PATH.$del_member_picture);
+				}
+				$this->session->unset_userdata('txt_member_picture.file_name');
+			}
+		}		
+		//Load data from database
+		$row=$this->Member->read($member_id);
+		
+		//print_r($row[0]);
+		$cond = array('cbo_samity'=>$row->samity_id,'cbo_samity_group'=>$row->group_id);
+		$data = $this->_load_combo_data($cond);
+		$data['row']=$row;
+		
+		$working_area_info=$this->Member->get_working_area_info($row->present_village_ward);
+			
+		//print_r($working_area_info);
+		if(!empty($working_area_info)) {
+			$data['row']->present_village_ward_name = $working_area_info->name;
+			$data['row']->present_village_ward_detail_info = $working_area_info->village_name.', '.$working_area_info->thana_name.','.$working_area_info->district_name;	
+		}
+		
+		$working_area_info=$this->Member->get_working_area_info($row->permanent_village_ward);
+		if(!empty($working_area_info)) {
+			$data['row']->permanent_village_ward_name = $working_area_info->name;
+			$data['row']->permanent_village_ward_detail_info = $working_area_info->village_name.', '.$working_area_info->thana_name.','.$working_area_info->district_name;	
+		}
+		//If data is not posted or validation fails, the add view is displayed
+		$data['title']='Edit Member';
+        $data['headline'] = 'Edit';
+		$this->layout->view('members/save',$data);		
+	}	
+
+    /*
+     * @Modified By: Matin
+     * @Modification Date : 15-03-2011
+     */
+	function delete($member_id=null)
+	{
+        if(empty($member_id))
+		{
+			$this->session->set_flashdata('warning','Member ID is not provided');
+			redirect('/members/index/');
+		}
+		//Check wether the child data exists        
+        $has_saving_deposits_entry = $this->Member->is_dependency_found('saving_deposits',  array('member_id' => $member_id));
+        $has_saving_withdraws_entry = $this->Member->is_dependency_found('saving_withdraws',  array('member_id' => $member_id));
+        $has_savings_entry = $this->Member->is_dependency_found('savings',  array('member_id' => $member_id));
+        $has_loans_entry = $this->Member->is_dependency_found('loans',  array('member_id' => $member_id));
+        $has_member_closing_entry = $this->Member->is_dependency_found('member_closing',  array('member_id' => $member_id));
+        $has_member_products_entry = $this->Member->is_dependency_found('member_products',  array('member_id' => $member_id));
+        if($has_loan_schedule_entry || $has_saving_deposits_entry || $has_saving_withdraws_entry || $has_savings_entry || $has_loans_entry || $has_member_closing_entry || $has_member_products_entry )
+        {
+             $this->session->set_flashdata('warning', DEPENDENT_DATA_FOUND);
+			redirect('/members/index/');
+        }
+        else
+        {
+            $data = $this->Member->read($member_id);
+            $picture = (isset ($data->member_picture))?$data->member_picture:'';
+            if($this->Member->delete($member_id))
+            {
+                // delete exitng photo.
+                if(file_exists(IMAGE_UPLOAD_PATH.$picture))
+                {
+                    @unlink((IMAGE_UPLOAD_PATH.$picture));
+                }
+                $this->session->set_flashdata('message',DELETE_MESSAGE);
+                redirect('/members/index/');
+            }
+        }
+	}
+
+	function _get_posted_data()
+	{	
+		$data=array();	
+		$data['name']=$this->input->post('txt_name');
+		$data['samity_id']=$this->input->post('cbo_samity');
+		$data['group_id']=$this->input->post('cbo_group');
+        $data['group_id'] = (!empty ($data['group_id']))?$data['group_id']:NULL;
+		$data['sub_group_id']=$this->input->post('cbo_sub_group');
+        $data['sub_group_id'] = (!empty ($data['sub_group_id']))?$data['sub_group_id']:NULL;
+		$data['code']=$this->input->post('txt_code');
+		$data['registration_no']=$this->input->post('txt_registration_no');
+		$data['registration_date']=$this->input->post('txt_registration_date');
+		$data['form_application_no']=$this->input->post('txt_form_application_no');
+		$data['date_of_birth']=$this->input->post('txt_date_of_birth');
+		$data['gender']=$this->input->post('txt_gender');
+        $data['gender'] = ($data['gender']=='Female')?'F':'M';
+		$data['marital_status']=$this->input->post('txt_marital_status');
+		$data['last_achieved_degree']=$this->input->post('txt_last_achieved_degree');
+		$data['fathers_spouse_name']=$this->input->post('txt_fathers_spouse_name');
+		$data['fathers_spouse_relationship']=$this->input->post('cbo_fathers_spouse_relationship');
+		$data['national_id']=$this->input->post('txt_national_id');
+		$data['primary_product_id']=$this->input->post('cbo_primary_product');
+		$data['present_village_ward']=$this->input->post('txt_present_village_ward');
+		$data['present_post_office_area']=$this->input->post('txt_present_post_office_area');
+		$data['present_contact_no']=$this->input->post('txt_present_contact_no');	
+		$data['permanent_village_ward']=$this->input->post('txt_permanent_village_ward');
+        $data['permanent_village_ward'] = (!empty ($data['permanent_village_ward']))?$data['permanent_village_ward']:NULL;
+		$data['permanent_post_office_area']=$this->input->post('txt_permanent_post_office_area');
+		$data['permanent_contact_no']=$this->input->post('txt_permanent_contact_no');
+		$data['nominee_name']=$this->input->post('txt_nominee_name');
+		$data['nominee_relation']=$this->input->post('txt_nominee_relation');
+		$data['nominee_address']=$this->input->post('txt_nominee_address');
+		$data['member_type']=$this->input->post('cbo_member_type');	
+		$data['no_of_family_member']=$this->input->post('txt_no_of_family_member');
+        $data['no_of_family_member'] = (!empty ($data['no_of_family_member']))?$data['no_of_family_member']:NULL;
+		$data['yearly_income']=$this->input->post('txt_yearly_income');
+        $data['yearly_income'] = (!empty ($data['yearly_income']))?$data['yearly_income']:NULL;
+		$data['profession']=$this->input->post('cbo_profession');	
+		$data['mothers_name']=$this->input->post('txt_mothers_name');	
+		$data['religion']=$this->input->post('cbo_religious');	
+		$data['mobile_no']=$this->input->post('txt_mobile_no');
+		
+		$data['branch_id']=$this->get_branch_id();	
+		$data['id_sequence_no']=$this->input->post('txt_id_sequence_no');
+	
+		$config['upload_path'] = IMAGE_UPLOAD_PATH;
+		$config['allowed_types'] = IMAGE_UPLOAD_ALLOWED_TYPES;
+		$config['max_size']	= IMAGE_UPLOAD_SIZE;
+		$config['max_width']  = IMAGE_UPLOAD_MAX_WIDTH;
+		$config['max_height']  = IMAGE_UPLOAD_MAX_HEIGHT;
+		$config['encrypt_name'] = true;
+		
+		$this->load->library('upload', $config);
+		$this->session->unset_userdata('txt_member_picture.error');
+		$this->session->unset_userdata('txt_member_picture.file_name');
+		if(! empty($_FILES['txt_member_picture']['name']) ){
+			if ( ! $this->upload->do_upload('txt_member_picture') )
+			{
+				$error = array('error' => $this->upload->display_errors());
+				$sessionArray = array('txt_member_picture.error'=>$error);
+				$this->session->set_userdata($sessionArray);
+			}	
+			else
+			{
+				$data['member_picture'] = $this->upload->data();
+				$data['member_picture'] = $data['member_picture']['file_name'];
+				$sessionArray = array('txt_member_picture.file_name'=>$data['member_picture']);
+				$this->session->set_userdata($sessionArray);
+			}
+		}	
+		return $data;
+	}
+	function _prepare_validation()
+	{
+		//Loading Validation Library to Perform Validation
+		$this->load->library('form_validation');	
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+		//Setting Validation Rule	
+		$this->form_validation->set_rules('txt_name','Name','trim|required|max_length[200]|xss_clean');			
+		$this->form_validation->set_rules('cbo_samity','Samity','trim|required|xss_clean|is_natural_no_zero|max_length[10]');
+		$this->form_validation->set_rules('cbo_group','Group','trim|xss_clean|is_natural_no_zero|max_length[10]');	
+		$this->form_validation->set_rules('cbo_sub_group','Sub Group','trim|xss_clean|is_natural_no_zero|max_length[10]');
+			
+		$this->form_validation->set_rules('txt_code','Code','trim|required|xss_clean|callback_check_members_auto_id_config|unique[members.code.id.member_id]|max_length[100]');			
+		$this->form_validation->set_rules('txt_registration_no','Admission No','trim|required|max_length[100]|xss_clean');	
+		$this->form_validation->set_rules('txt_registration_date','Admission Date','trim|required|xss_clean|is_date|max_length[15]|callback_check_registration_date');
+		$this->form_validation->set_rules('txt_form_application_no','Form Application No','trim|required|xss_clean|max_length[50]');	
+		$this->form_validation->set_rules('txt_date_of_birth','Date of Birth','trim|required|is_date|max_length[15]|xss_clean|callback_check_members_age_over_18');			
+		$this->form_validation->set_rules('txt_gender','Gender','trim|xss_clean|required|callback_check_gender_and_samity');
+		$this->form_validation->set_rules('txt_marital_status','Marital Status','trim|required|xss_clean');
+		$this->form_validation->set_rules('txt_last_achieved_degree','Education Level','trim|required|xss_clean');
+		$this->form_validation->set_rules('txt_fathers_spouse_name','Spouse/Father\'s Name','trim|required|max_length[100]|xss_clean');	
+		$this->form_validation->set_rules('cbo_fathers_spouse_relationship','Spouse/Father\'s Relationship','trim|required|max_length[30]|xss_clean');	
+		$this->form_validation->set_rules('txt_spouse_name','Spouse Name','trim|max_length[100]|xss_clean');	
+		$this->form_validation->set_rules('txt_national_id','National ID','trim|max_length[13]|numeric|xss_clean');
+		$this->form_validation->set_rules('cbo_primary_product','Primary Product','trim|required|xss_clean|is_natural_no_zero|max_length[10]');	
+		$this->form_validation->set_rules('txt_present_village_ward','Present Village/Ward','trim|required|xss_clean|is_natural_no_zero|max_length[100]');
+		$this->form_validation->set_rules('txt_present_post_office_area','Present Post Office + Area','trim|xss_clean|max_length[100]');	
+		$this->form_validation->set_rules('txt_present_contact_no','Present Contact no','trim|xss_clean|max_length[50]');	
+			
+		$this->form_validation->set_rules('txt_permanent_village_ward','Permanent Village/Ward','trim|xss_clean|max_length[100]');
+		$this->form_validation->set_rules('txt_permanent_post_office_area','Permanent Post Office + Area','trim|xss_clean|max_length[100]');	
+		$this->form_validation->set_rules('txt_permanent_contact_no','Permanent Contact no','trim|xss_clean|max_length[50]');	
+		$this->form_validation->set_rules('txt_nominee_name','Nominee Name','trim|required|xss_clean|max_length[100]');	
+		$this->form_validation->set_rules('txt_nominee_relation','Nominee Relation','trim|required|xss_clean|max_length[50]');
+		$this->form_validation->set_rules('txt_nominee_address','Nominee Address','trim|required|max_length[300]|xss_clean|max_length[255]');
+		$this->form_validation->set_rules('cbo_member_type','Member Type','trim|xss_clean|max_length[100]');	
+		$this->form_validation->set_rules('txt_no_of_family_member','No of family member','trim|integer|xss_clean|max_length[2]');	
+		$this->form_validation->set_rules('txt_yearly_income','Yearly income','trim|numeric|xss_clean|max_length[13]');	
+		$this->form_validation->set_rules('cbo_profession','Profession','trim|max_length[30]|xss_clean');	
+		$this->form_validation->set_rules('txt_mothers_name','Mothers Name','trim|max_length[100]|xss_clean');	
+		$this->form_validation->set_rules('cbo_religious','Religion','trim|max_length[10]|xss_clean');	
+		$this->form_validation->set_rules('txt_mobile_no','Mobile No','trim|max_length[50]|xss_clean');
+		// Pictures
+			
+		$this->form_validation->set_rules('txt_member_picture','Member Picture','callback_member_picture_check_img');  
+	}
+	function __member_auto_id($samity_id)
+	{
+		$branch_code = '';
+		$samity_code = '';		
+		$member_code = '';
+		$separator = '';
+		$members = array();
+		$member_exiting_code = '';
+		// Auto ID		
+		$member_auto_id_config = $this->Config_customized_id->get_auto_id_config_info();
+		if(!is_numeric($samity_id)) {
+		    return FALSE;
+		}
+		if( isset($member_auto_id_config->is_member_code_need) AND $member_auto_id_config->is_member_code_need) {
+			$separator = $member_auto_id_config->member_code_separator;
+			 if($member_auto_id_config->is_include_branch_code_for_member && $member_auto_id_config->is_include_samity_code_for_member) {
+				$samity_code=$this->Samity->get_samity_code($samity_id).$separator;
+				
+			 	$max_id = $this->Member->get_new_id('members','id_sequence_no',null,$samity_id);
+				
+			} elseif($member_auto_id_config->is_include_branch_code_for_member && !$member_auto_id_config->is_include_samity_code_for_member){
+				$branch_code=$this->Po_branch->get_branch_code().$separator;
+				$max_id = $this->Member->get_new_id('members','id_sequence_no',$this->Po_branch->get_branch_id());
+			}elseif(!$member_auto_id_config->is_include_branch_code_for_member && $member_auto_id_config->is_include_samity_code_for_member){
+				
+				$samity_code=$this->Samity->get_samity_code($samity_id).$separator;
+				$max_id = $this->Member->get_new_id('members','id_sequence_no',null,$samity_id);
+			}
+			
+			$member_code = $this->zerofill($max_id,$member_auto_id_config->member_code_length);
+			$members['id_sequence_no'] = $max_id;			
+			$members['members_code'] = $branch_code.$samity_code.$member_code;
+			return $members;
+		}
+		 return false;	
+	}
+	function check_members_age_over_18($str) {
+		if(!$this->is_date($str)) {
+				$this->form_validation->set_message('check_members_age_over_18', "Admission Date must be a valid date.");
+			        return FALSE;
+		}
+		//TODO $software_date
+
+        $software_date =	date('Y-n-d');
+		$software_date  = explode('-',$software_date);
+		$birth_date  = explode('-',$str);
+		if(mysql_to_unix("{$software_date[0]}{$software_date[1]}{$software_date[2]}") - mysql_to_unix("{$birth_date[0]}{$birth_date[1]}{$birth_date[2]}") < 568080000)	{
+					
+
+				$this->form_validation->set_message('check_members_age_over_18', "Member age must be greater than or equal 18.");
+			        return FALSE;
+				}
+		
+		return TRUE;
+	}
+	function check_members_auto_id_config($str)
+	{
+		$branch_code = '';
+		$samity_code = '';		
+		$member_code = '';
+		$separator = '';
+		$member_exiting_code = '';
+		$samity_id = $this->input->post('cbo_samity');
+		$member_id=$this->input->post('member_id');
+		if(is_numeric($member_id)) {
+			$member_exiting_code=$this->Member->get_member_code($member_id);
+		}
+		// Auto ID		
+		$member_auto_id_config = $this->Config_customized_id->get_auto_id_config_info();
+		//$member_auto_id_config =$member_auto_id_config[0];
+		if(!is_numeric($samity_id)) {
+			$this->form_validation->set_message('check_members_auto_id_config', "You must be select a Samity at first.");
+		    return FALSE;
+		}
+		if( isset($member_auto_id_config->is_member_code_need) AND $member_auto_id_config->is_member_code_need AND $member_exiting_code != $str) {
+			$separator = $member_auto_id_config->member_code_separator;
+			 if($member_auto_id_config->is_include_branch_code_for_member && $member_auto_id_config->is_include_samity_code_for_member) {
+			//	$branch_code=$this->Po_branch->get_branch_code().$separator;
+				$samity_code=$this->Samity->get_samity_code($samity_id).$separator;
+				
+			 	$max_id = $this->Member->get_new_id('members','id_sequence_no',null,$samity_id);
+				
+			} elseif($member_auto_id_config->is_include_branch_code_for_member && !$member_auto_id_config->is_include_samity_code_for_member){
+				$branch_code=$this->Po_branch->get_branch_code().$separator;
+				$max_id = $this->Member->get_new_id('members','id_sequence_no',$this->Po_branch->get_branch_id());
+			}elseif(!$member_auto_id_config->is_include_branch_code_for_member && $member_auto_id_config->is_include_samity_code_for_member){
+				
+				$samity_code=$this->Samity->get_samity_code($samity_id).$separator;
+				$max_id = $this->Member->get_new_id('members','id_sequence_no',null,$samity_id);
+			}
+			
+			$member_code = $this->zerofill($max_id,$member_auto_id_config->member_code_length);
+			$members_code = $branch_code.$samity_code.$member_code;
+			
+			$members_code_len = strlen($members_code);
+			if($members_code_len != strlen($str)) {
+					$this->form_validation->set_message('check_members_auto_id_config', "The Member ID field must be exactly {$members_code_len} characters in length.");
+			        return FALSE;
+			}
+			if($members_code != $str) {
+					$this->form_validation->set_message('check_members_auto_id_config', "The Member ID field must be exactly  like this {$members_code}.");
+			        return FALSE;
+			}
+		}	
+		return TRUE;
+	}
+	
+	function check_registration_date($str)
+	{
+		
+		$registration_date = $this->input->post('txt_registration_date');
+
+			
+		$member_id=$this->input->post('member_id');
+		if(!empty($registration_date) ) {
+			$registration_date  = explode('-',$registration_date);
+			if(isset($registration_date[2])) {
+				$registration_year = (is_numeric($registration_date[0]))?$registration_date[0]:"";
+				$registration_month = (is_numeric($registration_date[1]))?$registration_date[1]:"";
+				$registration_day = (is_numeric($registration_date[2]))?$registration_date[2]:"";
+				if(!is_numeric($this->input->post('cbo_samity'))) {
+					$this->form_validation->set_message('check_registration_date', "You must be select a Samity.");
+		        	return FALSE;
+				}
+				$samity_created_date = $this->Samity->get_samity_created_date($this->input->post('cbo_samity'));
+				$samity_created_date  = explode('-',$samity_created_date);
+				
+				if(isset($samity_created_date[2])) {
+					$samity_created_year = (is_numeric($samity_created_date[0]))?$samity_created_date[0]:"";
+					$samity_created_month = (is_numeric($samity_created_date[1]))?$samity_created_date[1]:"";
+					$samity_created_day = (is_numeric($samity_created_date[2]))?$samity_created_date[2]:"";
+				}
+				
+				if(mysql_to_unix("{$samity_created_year}{$samity_created_month}{$samity_created_day}") > mysql_to_unix("{$registration_year}{$registration_month}{$registration_day}"))	{
+					$this->form_validation->set_message('check_registration_date', " Member registration date must be upper date then samity.");
+		        	return FALSE;
+				}				
+			} else {
+				$this->form_validation->set_message('check_registration_date', "Must be enterd registration date properly.");
+		        	return FALSE;
+			}
+		} else {
+				$this->form_validation->set_message('check_registration_date', "Must be enterd registration date properly.");
+		        	return FALSE;
+			}
+			
+		return TRUE;
+	}
+	
+	function check_gender_and_samity($str)
+	{
+		// check samity type and member sex
+		$samity_type = $this->Samity->get_samity_type_by_samity_id($this->input->post('cbo_samity'));
+		$str = trim($str);	
+		$str =  ($str == 'Female')? 'F' :(($str == 'Male')?'M':'');
+		if($samity_type <> $str) {
+			$this->form_validation->set_message('check_gender_and_samity', " Samity type and Gender must be equal.");
+		        return FALSE;
+		}		
+		return TRUE;
+	}
+	function member_picture_check_img()
+	{
+	$res = TRUE;
+	$data = $this->session->userdata('txt_member_picture.error');
+    if(isset($data['error']))
+    {
+		$this->form_validation->set_message('member_picture_check_img', $data['error']);
+		$this->session->unset_userdata('txt_member_picture.error');
+		$res = FALSE;
+    }
+    
+    return $res;
+    }
+	function _load_combo_data($cond = array())
+	{
+		//print_r($cond);
+		$branch_id = $this->get_branch_id();
+		$samity_id = isset($cond['cbo_samity'])?$cond['cbo_samity']:-1;
+		$samity_group_id = isset($cond['cbo_samity_group'])?$cond['cbo_samity_group']:-1;
+		
+		// Loading samity list which will be used in combo box
+		$data['samities'] = $this->Samity->get_samity_list($branch_id);	
+		
+		//$data['products'] = $this->Product->get_product_list("LOAN",true);
+		$data['loan_products'][''] = '---Select---';	
+		$loan_products = $this->Loan_product->get_primary_loan_product_list();
+        //print_r($loan_products);
+		foreach($loan_products as $loan_product){	
+			$data['loan_products'][$loan_product->product_id] = $loan_product->product_mnemonic.' - '.$loan_product->funding_org_name;
+		}
+		// Loading group list which will be used in combo box
+		$data['groups'] = $this->Member->get_group_list($samity_id);	
+		// Loading sub-group list which will be used in combo box
+		$data['sub_groups'] = $this->Member->get_sub_group_list($samity_group_id);	
+		//Type list which will be used in combo box
+		$data['member_types'] = array('General'=>'General','Group Leader'=>'Group Leader','Samity Leader'=>'Samity Leader');			
+		//Type list which will be used in combo box
+		$data['genders'] = $this->Member->get_gender();			
+		//Type list which will be used in combo box
+		$data['religious'] = $this->Member->get_religious();
+		//educational qualification list
+		$data['educational_qualification'] = $this->Educational_qualification->get_qualification_list();
+		//Type list which will be used in combo box
+		$data['activities'] = array(''=>'--Select--','Daily Labor'=>'Daily Labor','Agriculture'=>'Agriculture','Animal Husbandry'=>'Animal Husbandry','Agriculture'=>'Agriculture','Micro Enterprise'=>'Micro Enterprise','Production'=>'Production');
+		$data['marital_status_list'] = array(''=>'--Select--','Single'=>'Single','Married'=>'Married','Divorced'=>'Divorced','Widowed'=>'Widowed');
+		$data['fathers_spouse_relationships'] = array(''=>'--Select--','Father'=>'Father','Spouse'=>'Spouse');
+		
+		// auto id config data
+		$data['members_code'] = '';
+		$data['is_members_code_auto_id_need'] = false;
+		$member_auto_id_config = $this->Config_customized_id->get_auto_id_config_info();
+		if( isset($member_auto_id_config->is_member_code_need) AND $member_auto_id_config->is_member_code_need) {
+			$data['is_members_code_auto_id_need'] = true;
+		}
+		return $data;
+	}
+	function ajax_for_get_member_auto_id_by_samity_id (){
+		$this->output->enable_profiler(FALSE);
+		$callback_message = array();
+		$samity_id      = $this->input->post('samity_id');
+		
+		$callback_message['members_code'] = '';
+		$callback_message['id_sequence_no'] = '';
+		
+		if(empty($samity_id))
+        {
+            $callback_message['status'] = 'failure';
+            $callback_message['message']= 'Select a Branch';
+        }
+		else
+        {
+			$callback_message['status'] = 'success';
+			$members_code_info = $this->__member_auto_id($samity_id);
+			$callback_message['members_code'] = $members_code_info['members_code'];
+			$callback_message['id_sequence_no'] = $members_code_info['id_sequence_no'];
+		
+			
+		}
+		if( count($callback_message) != 0 )
+	    {
+	        echo json_encode($callback_message);
+	    }
+	}
+	// get samity type from auto listing way
+	function get_samity_type_status_auto()
+	{
+		echo $this->input->post('cbo_samities_option');
+		$data=$this->Member->get_samity_type_status_auto($this->input->post('q'));
+		//print_r($data);
+		foreach($data as $row)
+		{
+			//print_r($row);
+			echo $row->id.','.$row->name.','.$row->branch_name.','.$row->samity_name.','.$row->working_area_name.','.$row->branch_id.','.$row->samity_id.','.$row->member_primary_product_id."\n";
+		}
+		die;
+		$this->output->enable_profiler(FALSE);
+	}
+	
+	function ajax_get_member_list_auto()
+	{
+		
+		$data=$this->Member->get_member_list_auto($this->input->post('q'));
+		//print_r($data);
+		foreach($data as $row)
+		{
+			//print_r($row);
+			echo $row->id.','.$row->name.','.$row->branch_name.','.$row->samity_name.','.$row->working_area_name.','.$row->branch_id.','.$row->samity_id.','.$row->member_primary_product_id."\n";
+		}
+		die;
+		$this->output->enable_profiler(FALSE);
+	}
+	function ajax_for_get_member_info_by_id() {
+		//print_r($this->output);die;
+		$this->output->enable_profiler(FALSE);
+		$callback_message = array();
+		$member_id      = $this->input->post('member_id');
+		if(empty($member_id))
+        {
+            $callback_message['status'] = 'failure';
+            $callback_message['message']= 'Type member';
+        }
+		else
+        {
+			$callback_message['status'] = 'success';
+			$member_samity_info = $this->Member->get_member_samity_info($member_id);
+			if(!empty($member_samity_info)) {
+				foreach( $member_samity_info as $row) {
+				$callback_message['member']['id'] = $row->member_id;
+				$callback_message['member']['name'] = $row->member_name;
+				$callback_message['member']['code'] = $row->member_code;
+				 $callback_message['samity']['id'] = $row->samity_id;
+				 $callback_message['samity']['code'] = $row->samity_code;
+				 $callback_message['samity']['name'] = $row->samity_name;
+				 $callback_message['working_area']['name'] = $row->working_area_name;
+				 $callback_message['village']['name'] = $row->village_name;
+				 $callback_message['branch']['name'] = $row->branch_name;	
+				 $callback_message['branch']['id'] = $row->branch_id;	
+				 $callback_message['product']['id'] = $row->product_id;
+				 $callback_message['product']['mnemonic'] = $row->product_mnemonic;
+				 $callback_message['product']['name'] = $row->product_name;	
+	  			}
+			}
+			else {
+				$callback_message['status'] = 'failure';
+            	$callback_message['message']= 'No data found';
+            	//die;
+			}
+			$member_loan_info = $this->Member->get_member_loan_info($member_id);
+			if(!empty($member_loan_info)) {
+				foreach( $member_loan_info as $row) {
+				 $callback_message['loan']['id'][] = $row->loan_id;
+				 $callback_message['loan']['customized_loan_no'][] = $row->customized_loan_no;
+				 $callback_message['loan']['loan_amount'][] = $row->loan_amount;
+				 $callback_message['loan']['interest_rate'][] = $row->interest_rate;
+				 $callback_message['loan']['interest_amount'][] = $row->interest_amount;
+				 $callback_message['loan']['discount_interest_amount'][] = $row->discount_interest_amount;
+				 $callback_message['loan']['loan_cycle'][] = $row->loan_cycle;
+				 $callback_message['loan']['total_payable_amount'][] = $row->total_payable_amount;
+				 $callback_message['loan']['number_of_installment'][] = $row->number_of_installment;
+				 $callback_message['loan']['current_status'][] = $row->current_status;
+				 $callback_message['loan']['total_repayment_amount'][] = $row->total_repayment_amount;
+				 $callback_message['loan']['last_repayment_date'][] = $row->last_repayment_date;
+				 $callback_message['loan']['last_installment_number'][] = $row->last_installment_number;			
+	  			}
+			} else {
+				$callback_message['loan']['id'] = "";
+			}
+			$member_saving_info = $this->Member->get_member_saving_info($member_id);
+			if(!empty($member_saving_info)) {
+				foreach( $member_saving_info as $row) {
+				 $callback_message['saving']['id'][] = $row->saving_id;
+				 $callback_message['saving']['code'][] = $row->saving_code;
+				 $callback_message['saving']['funding_organization_id'][] = $row->funding_organization_id;
+				 $callback_message['saving']['opening_date'][] = $row->opening_date;
+				 $callback_message['saving']['weekly_savings'][] = $row->weekly_savings;	
+				 $callback_message['saving']['current_status'][] = $row->current_status;	
+				 $callback_message['saving']['deposit_amount'][] = $row->deposit_amount;	
+				 $callback_message['saving']['withdraw_amount'][] = $row->withdraw_amount;	
+				 $callback_message['saving']['product_id'][] = $row->product_id;	
+				 $callback_message['saving']['product_mnemonic'][] = $row->product_mnemonic;			
+	  			}
+			}else {
+				$callback_message['saving']['id'] = "";
+			} 
+		
+		}
+		if( count($callback_message) != 0 )
+	    {
+	        echo json_encode($callback_message);
+	    }		
+	}
+	
+
+	function check_duplicate_transfer($str)
+	{
+		$member_id = $this->input->post('member_id');
+		$member_transfer_id = $this->input->post('member_transfer_id');
+		// check unauthorised transfer exists
+		if(is_numeric($member_id) and (empty($member_transfer_id)) ){
+			if($this->Member_transfer->get_unauthorised_transfer_by_member_id($member_id))
+			{
+				$this->form_validation->set_message('check_duplicate_transfer', "A transfer already pending.");
+			        return FALSE;
+			}	
+		}
+		return TRUE;
+	}
+}

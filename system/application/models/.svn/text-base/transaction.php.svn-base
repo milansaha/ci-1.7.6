@@ -1,0 +1,325 @@
+<?php
+/** 
+	* Transaction Model Class.
+	* @pupose		Loan / Savings transaction information
+	*		
+	* @filesource	./system/application/models/transaction.php	
+	* @package		microfin 
+	* @subpackage	microfin.system.application.models.transaction
+	* @version      $Revision: 1 $
+	* @author       $Author: Anisur Rahman Alamgir $	
+	* @lastmodified $Date: 2011-01-11 $	 
+*/ 
+class Transaction extends MY_Model {
+
+   // var $loan_base_class=null;
+    function __construct()
+    {
+        // Call the Model constructor
+        parent::__construct();
+     $this->load->library('Scheduler1',null,"scheduler");
+       //$this->load->library('Scheduler1');
+    }
+    //This function is for listing of samities 
+	function get_samity_info($data=null)
+	{	
+		$q = "SELECT id as samity_id,concat(code,' (',name,')') as samity_name 
+										FROM samities 
+										WHERE samity_day='".$data['dayname']."'
+										AND branch_id='{$data['branch_id']}'
+										AND id 
+										NOT IN(SELECT samity_id 
+										FROM loan_transactions 
+										WHERE branch_id='{$data['branch_id']}'
+										AND transaction_date='".$data['current_date']."'
+										AND is_auto_process=TRUE 
+										)
+										AND id 
+										NOT IN(SELECT samity_id 
+										FROM saving_deposits 
+										WHERE branch_id='{$data['branch_id']}'
+										AND transaction_date='".$data['current_date']."' 
+										AND is_auto_process=TRUE )
+										AND id 
+										NOT IN(SELECT samity_id 
+										FROM skt_collections 
+										WHERE branch_id='{$data['branch_id']}'
+										AND transaction_date='".$data['current_date']."'
+										AND is_auto_process=TRUE)
+										ORDER BY code ASC";
+		
+		$samity_info = $this->db->query($q);																							
+
+		return $samity_info->result();  
+	}
+	
+/*
+	function get_samity_info_autoprocess_done($data=null)
+	{		
+		$samity_info = $this->db->query("SELECT id,samity_id
+										FROM loan_transactions 
+										WHERE transaction_date='".$data['current_date']."'
+										AND branch_id='".$data['branch_id']."'
+										ORDER BY id ASC");													
+
+		return $samity_info->result();  
+	}
+*/
+	/**
+	 * This function is for listing of samity wise active member 
+	 * @param samity_id   
+	 */
+	function get_samity_wise_member_info($samity_id)
+	{	
+
+		$query="SELECT                
+					saving_products_id,
+					product_id,
+					branch_id,
+					samity_id,
+					samity_code,
+					member_id,
+					primary_product_id,
+					member_name,
+					savings_id,
+					savings_acc,
+					SUM(weekly_savings) AS weekly_savings ,
+					customized_loan_no,
+					loan_id,
+					SUM(installment_amount) AS installment_amount,
+					skt_amount
+				FROM (SELECT 
+					s.id AS samity_id,
+					s.code AS samity_code,                
+					m.id AS member_id,
+					m.branch_id,
+					m.primary_product_id,
+					m.name AS member_name, 
+					0 AS savings_id, 
+					0 AS savings_acc,
+					0 AS saving_products_id,
+					0 AS weekly_savings,
+					l.customized_loan_no,
+					l.id AS loan_id, 
+					l.installment_amount,
+					l.product_id,
+					s.skt_amount
+				FROM samities AS s
+				LEFT JOIN members AS m ON (m.samity_id = s.id AND m.member_status = 'Active')
+				RIGHT JOIN loans AS l ON (l.member_id = m.id) 
+				WHERE s.id = $samity_id and
+				l.current_status='1' and 
+				l.is_loan_fully_paid='0'
+				UNION ALL 
+				SELECT 
+					s.id AS samity_id,
+					s.code AS samity_code,
+					m.id AS member_id,
+					m.branch_id,
+					m.primary_product_id,
+					m.name AS member_name, 
+					sv.id AS savings_id,
+					sv.code AS savings_acc,
+					sv.saving_products_id,
+					sv.weekly_savings AS weekly_savings,
+					0 AS customized_loan_no,
+					0 AS loan_id , 
+					0 AS installment_amount,
+					0 AS product_id,
+					s.skt_amount
+				FROM samities AS s
+				LEFT JOIN members AS m ON (m.samity_id = s.id AND m.member_status = 'Active')
+				RIGHT JOIN savings AS sv ON (sv.member_id = m.id)  
+				WHERE s.id = $samity_id
+				) t GROUP BY member_id ,savings_id,loan_id,saving_products_id,product_id,
+					branch_id,samity_id,samity_code,primary_product_id,member_name,savings_id,savings_acc,
+					customized_loan_no,loan_id,skt_amount
+				ORDER BY member_id
+				";
+	
+		//echo "$query <br>";
+		$result = $this->db->query($query);	
+		$auto_process_info = $result->result();	
+		$result->free_result();	
+		return $auto_process_info;  
+	}
+	/**
+	 * This function is for listing of samity wise active member 
+	 * @param samity_id   
+	 */
+	function get_total_member_info($samity_id_string,$transaction_date)
+	{	
+		if(empty($samity_id_string)) {
+			$samity_id_string = "-999";
+		}
+		$query="SELECT SUM(total_member) AS total_member,samity_id FROM (
+SELECT COUNT(member_id) AS total_member,samity_id
+FROM loans WHERE samity_id IN ($samity_id_string) AND current_status=TRUE 
+AND is_loan_fully_paid=FALSE AND first_repayment_date <= '$transaction_date' GROUP BY samity_id
+UNION ALL
+SELECT COUNT(member_id) AS total_member,samity_id
+FROM savings  WHERE samity_id IN ($samity_id_string) AND current_status=TRUE 
+AND opening_date <= '$transaction_date' GROUP BY samity_id) t GROUP BY samity_id;";
+		//echo "$query <br>";
+		$result = $this->db->query($query);	
+		$members = $result->result_array();	
+		$result->free_result();
+		return $members;  
+	}
+    function loan_transaction_add($data)
+    {
+        return $this->db->insert('loan_transactions', $data);
+    }
+    function loan_due_add($data)
+    {
+        return $this->db->insert('loan_due_collection_register', $data);
+    }
+    function loan_advance_add($data)
+    {
+        return $this->db->insert('loan_advance_collection_register', $data);
+    }
+    function member_attendence_add($data)
+    {
+        return $this->db->insert('member_attendance', $data);
+    }
+    function member_skt_add($data)
+    {
+        return $this->db->insert('skt_collections', $data);
+    }
+    
+    function saving_transaction_add($data)
+    {
+        return $this->db->insert('saving_deposits', $data);
+    }
+    function samity_read($samity_id)
+    {
+        $query=$this->db->getwhere('samities', array('id' => $samity_id));
+		return $query->result();
+    }
+    
+    function loan_collection($loanid,$date)
+    {
+        $query=$this->db->query("SELECT 
+								loan_id,
+								SUM(transaction_amount) AS collected_amount
+								FROM loan_transactions
+								WHERE loan_id=".$loanid."
+								AND transaction_date<'".$date."'
+								GROUP BY loan_id
+								");
+		return $query->result();
+    }
+	function get_samity_wise_loan_unauthorizationprocess($samity_id)
+	{		
+		$loan_info = $this->db->query("SELECT lt.id AS loan_transaction_id, lt.amount AS laon_amount, lt.installment_number 
+		, lt.transaction_date, l.id AS loan_id, l.customized_loan_no AS laon_no
+		, m.id AS member_id, m.name AS member_name, m.code AS member_code, s.id AS samity_id
+		FROM 
+		samities AS s
+		LEFT JOIN members AS m ON (m.samity_id = s.id)
+		LEFT JOIN loans AS l ON (l.member_id = m.id  )
+		LEFT JOIN loan_transactions AS lt ON (lt.loan_id = l.id )
+		WHERE lt.authorization_status = 0 AND s.id = $samity_id AND lt.is_deleted = 0 AND l.is_deleted = 0 ORDER BY m.id;");			
+		return $loan_info->result();  
+	}
+	function get_samity_wise_saving_unauthorizationprocess($samity_id)
+	{		
+		$saving_info = $this->db->query("SELECT st.id AS saving_transaction_id, st.amount AS saving_amount
+		,st.transaction_date AS transaction_date, sv.id AS saving_id, sv.code AS saving_code
+		,m.id AS member_id, m.name AS member_name, m.code AS member_code, s.id AS samity_id
+		FROM 
+		samities AS s
+		LEFT JOIN members AS m ON (m.samity_id = s.id)
+		LEFT JOIN savings AS sv ON (sv.member_id = m.id)
+		LEFT JOIN saving_transactions AS st ON (st.savings_id = sv.id)
+		WHERE st.authorization_status = 0 AND s.id = $samity_id AND st.is_deleted = 0 AND sv.is_deleted = 0
+		ORDER BY m.id;");			
+		return $saving_info->result();  
+	}
+	
+	function execute_loan_due($samities,$new_day_end_date,$branch_id){
+		//echo "---------<pre>";				
+		$loan_schedule_information=$this->scheduler->get_samity_wise_current_loan_information_just_before_date($samities,$new_day_end_date,$branch_id);
+		//print_r($loan_schedule_information);
+		//die();
+		$loan_schedules = array();
+		foreach($loan_schedule_information as $loan_schedule) {
+			if(is_array($loan_schedule)) {
+				foreach($loan_schedule as $loan) {
+					if(is_array($loan)) {
+						$loan_schedules[$loan['loan_id']]['loan_id'] = $loan['loan_id'];
+						$loan_schedules[$loan['loan_id']]['installment_amount']  = $loan['installment_amount'];
+						$loan_schedules[$loan['loan_id']]['last_installment_amount']  = $loan['last_installment_amount'];
+						$loan_schedules[$loan['loan_id']]['installment_no']  = $loan['installment_no'];
+						$loan_schedules[$loan['loan_id']]['total_recoverable_amount']  = ($loan['installment_amount'] * ($loan['installment_no'] - 1));//+ $loan['last_installment_amount'];
+					}
+				}
+			}
+		}
+		
+/*
+		//Loan transaction
+		$loan_id_list = array_keys($loan_schedules);
+		
+		$loan_id_string = join(',',$loan_id_list);
+		$loan_transaction_list = $this->get_loan_transaction_info($loan_id_string,$new_day_end_date);
+		$fully_paid_loan_list = array();
+		if(!empty($loan_transaction_list)) {
+			foreach($loan_transaction_list as $loan) {
+				$loan_schedules[$loan['loan_id']]['transaction_amount'] = $loan['total_transaction_amount'];
+				if($loan_schedules[$loan['loan_id']]['total_recoverable_amount'] <= $loan['total_transaction_amount']) {
+					$fully_paid_loan_list[$loan['loan_id']]['id'] = $loan['loan_id'];
+					$fully_paid_loan_list[$loan['loan_id']]['fully_paid_amount'] = $loan['total_transaction_amount'];
+					$fully_paid_loan_list[$loan['loan_id']]['is_loan_fully_paid'] = true;
+					$fully_paid_loan_list[$loan['loan_id']]['current_status'] = false;
+					$fully_paid_loan_list[$loan['loan_id']]['loan_fully_paid_date'] = $new_day_end_date;
+					$fully_paid_loan_list[$loan['loan_id']]['loan_closing_date'] = $new_day_end_date;
+				}
+			}
+		}
+		//make fully paid
+		if(!empty($fully_paid_loan_list)) {
+			foreach($fully_paid_loan_list as $fully_paid_loan){
+				//print_r($fully_paid_loan);
+				//$this->loan_edit($fully_paid_loan);
+			}
+		}
+*/
+		return $loan_schedules;
+	}
+	
+	function get_loan_transaction_amount($loan_id,$transaction_amount)
+    {
+        $current_date=$this->session->userdata('system.software_date');
+        $system_date = date('Y-m-d',strtotime( $current_date['current_date']));
+        $schedule_info = $this->scheduler1->get_loan_transaction_amount($loan_id,$system_date);        
+		$data['transaction_principal_amount']=0;
+		$data['transaction_interest_amount']=0;		
+		//print($loan_schedule_information[0]->principal_installment_amount);die;
+		if($transaction_amount>$schedule_info['principal_installment_amount'])
+		{
+			$installment_amount=$schedule_info['principal_installment_amount']+$schedule_info['interest_installment_amount'];
+            
+			$installment_no=(int)($transaction_amount/$installment_amount);			
+			for($i=0;$installment_no>$i;$i++)
+			{
+				$data['transaction_principal_amount']=$data['transaction_principal_amount']+$schedule_info['principal_installment_amount'];
+				$data['transaction_interest_amount']=$data['transaction_interest_amount']+$schedule_info['interest_installment_amount'];
+			}			
+			$remaing_amount=$transaction_amount-($installment_no*$installment_amount);
+			if(!empty($remaing_amount))	
+			{				
+				$data['transaction_principal_amount']=$data['transaction_principal_amount']+$remaing_amount;		
+			}		
+		}	
+		else if($transaction_amount<$schedule_info['principal_installment_amount'])
+		{
+			$data['transaction_principal_amount']=$transaction_amount;
+		}	
+		else 
+		{
+			$data['transaction_principal_amount']=$data['transaction_principal_amount'];
+		}			
+		return  $data; 		
+	}
+}

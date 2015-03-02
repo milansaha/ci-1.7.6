@@ -1,0 +1,360 @@
+10
+
+dir
+3502
+http://192.168.3.10/svn_new/microfin/system/application/views
+http://192.168.3.10/svn_new/microfin
+
+
+
+2011-04-13T15:24:20.165756Z
+3500
+taposhi
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+a5cf61f3-bc37-484d-9254-e4045acaea5f
+
+loan_reschedules
+dir
+
+user_role_wise_privileges
+dir
+
+loan_transactions
+dir
+
+educational_qualifications
+dir
+
+ratio_analysis_statement_reports
+dir
+
+po_branches
+dir
+
+saving_withdraws
+dir
+
+auths
+dir
+
+employee_departments
+dir
+
+welcome_message.php
+file
+
+
+
+
+2011-02-27T10:11:08.753838Z
+fa52a2e1729d8784997fa92d7bccef04
+2011-01-19T10:55:31.153970Z
+655
+saroj
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2554
+
+migrations_members
+dir
+
+additional_reports
+dir
+
+po_areas
+dir
+
+members
+dir
+
+member_types
+dir
+
+samity_employee_changes
+dir
+
+loan_product_categories
+dir
+
+saving_advance_registers
+dir
+
+layouts
+dir
+
+saving_deposits
+dir
+
+saving_attendance_registers
+dir
+
+po_divisions
+dir
+
+one_time_loan_accounts
+dir
+
+employee_promotions
+dir
+
+member_closings
+dir
+
+po_unions_or_wards
+dir
+
+savings
+dir
+
+po_thanas
+dir
+
+loan_products
+dir
+
+samity_subgroups
+dir
+
+employee_designations
+dir
+
+consolidated_reports
+dir
+
+branchwise_samity_reports
+dir
+
+loan_purposes
+dir
+
+samity_day_changes
+dir
+
+process_month_ends
+dir
+
+branch_wise_consolidated_balancing_register_reports
+dir
+
+member_transfers
+dir
+
+skt_collections
+dir
+
+samitywise_member_reports
+dir
+
+samity_groups
+dir
+
+config_customized_ids
+dir
+
+member_educational_qualifications
+dir
+
+elements
+dir
+
+loans
+dir
+
+member_details
+dir
+
+field_officer_wise_consolidated_reports
+dir
+
+samities
+dir
+
+user_audit_trails
+dir
+
+user_access_logs
+dir
+
+process_day_ends
+dir
+
+config_generals
+dir
+
+loan_schedules
+dir
+
+po_working_areas
+dir
+
+po_zones
+dir
+
+reports
+dir
+
+regular_and_general_reports
+dir
+
+pages
+dir
+
+savings_refund_register_reports
+dir
+
+config_holidays
+dir
+
+member_cancellation_reports
+dir
+
+users
+dir
+
+register_reports
+dir
+
+component_wise_daily_collection_reports
+dir
+
+po_mis_reports
+dir
+
+po_regions
+dir
+
+transactions
+dir
+
+employee_terminations
+dir
+
+saving_transactions
+dir
+
+member_wise_subsidy_loan_saving_ledger_reports
+dir
+
+user_roles
+dir
+
+employee_branch_transfers
+dir
+
+fully_paid_loan_register_reports
+dir
+
+po_organizations
+dir
+
+transaction_authorizations
+dir
+
+member_products
+dir
+
+product_interest_rates
+dir
+
+member_discontinues
+dir
+
+pass_book_reports
+dir
+
+po_funding_organizations
+dir
+
+employees
+dir
+
+po_zone_area_details
+dir
+
+po_districts
+dir
+
+employee_product_transfers
+dir
+
+samity_closings
+dir
+
+user_resources
+dir
+
+index.html
+file
+
+
+
+
+2011-02-27T10:11:08.753838Z
+0227cfd904e99656279202032b98d4a7
+2011-01-04T06:28:43.435703Z
+1
+root
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+114
+
+saving_products
+dir
+
+errors
+dir
+
+po_village_or_blocks
+dir
+
